@@ -50,6 +50,12 @@ def dx2(theta1, theta2, dtheta1, dtheta2):
 def dy2(theta1, theta2, dtheta1, dtheta2):
     return (L1*cos(theta1) + L2*cos(theta1+theta2))*dtheta1 + (L2*cos(theta1+theta2))*dtheta2
 
+def J(theta1, theta2):
+    return np.array([
+        [-L1*sin(theta1) - L2*sin(theta1+theta2), -L2*sin(theta1+theta2)],
+        [L1*cos(theta1) + L2*cos(theta1+theta2), L2*cos(theta1+theta2)],
+    ])
+
 def K1(theta1, theta2, dtheta1, dtheta2):
     return 0.5*m1*(dx1(theta1, theta2, dtheta1, dtheta2)**2 + dy1(theta1, theta2, dtheta1, dtheta2)**2)
 
