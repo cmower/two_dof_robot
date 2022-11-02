@@ -1,12 +1,21 @@
 import numpy as np
 from robot import FD, animate_robot, plt, gr, J
 
+"""
+
+This script demonstrates how a robot controller responds when an
+external force is applied at the end-effector. The controller attempts
+to maintain the initial robot position, and at the 200th iteration, an
+external force is temporarily applied for a short amount of time.
+
+"""
+
 def main():
 
-    n = 1000
-    dt = 0.01
+    n = 1000  # number of steps
+    dt = 0.01  # time step
 
-    theta10, theta20 = np.deg2rad([45, 90])
+    theta10, theta20 = np.deg2rad([45, 90])  # initial robot configuration
 
     Theta1 = np.zeros(n)
     Theta2 = np.zeros(n)
@@ -19,11 +28,13 @@ def main():
     ddTheta1 = np.zeros(n)
     ddTheta2 = np.zeros(n)
 
-    Fext = np.array([30, 0])
+    Fext = np.array([30, 0])  # external contact force at end-effector
+    i_start = 200  # iteration that the external contact force is applied from
+    i_end = 250  # iteration that the external contact force is applied till
 
     def tau_ctrl(theta1, theta2, dtheta1, dtheta2):
-        K = 100
-        D = 20
+        K = 100  # stiffness gain
+        D = 20  # damping gain
         tau1 = K*(theta10 - theta1) - D*dtheta1
         tau2 = K*(theta20 - theta2) - D*dtheta2
         return tau1, tau2
@@ -32,7 +43,7 @@ def main():
 
         tau1, tau2 = tau_ctrl(Theta1[i], Theta2[i], dTheta1[i], dTheta2[i])
 
-        if 200 < i < 250:
+        if i_start < i < i_end:
             # apply external contact force at end-effector
             tau_ext = J(Theta1[i], Theta2[i]).T@Fext
             tau1 += tau_ext[0]

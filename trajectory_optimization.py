@@ -4,12 +4,23 @@ from scipy.optimize import minimize, NonlinearConstraint
 
 from robot import x2, y2, theta1_lim, theta2_lim, animate_robot, plt, plot_trajectory
 
+"""
+
+This script shows how to formulate a trajectory optimization problem
+for planning. The goal is to find a plan from an initial configuration
+to a goal state in a given duration whilst minimizing joint velocity
+and acceleration. The goal state is given by a goal end-effector
+position.
+
+"""
+
 def plan_joint_trajectory_to_goal(theta10, theta20, x2g, y2g, duration, n, method, wx=1e3, wy=1e3, wdx=0.01, wdy=0.01, wddx=1, wddy=1, disp=False, animate=True, plot_traj=True):
 
-    t = np.linspace(0, duration, n)
-    dt = t[1]
+    t = np.linspace(0, duration, n)  # time evolution
+    dt = t[1]  # time step
 
     def cost(X):
+        """Cost function: (i) reach end-effector goal, (ii) minimize velocty, (iii) minimize acceleration"""
         traj = X.reshape(4, n)
         Theta1 = traj[0,:]
         Theta2 = traj[1,:]
@@ -22,6 +33,7 @@ def plan_joint_trajectory_to_goal(theta10, theta20, x2g, y2g, duration, n, metho
         return wx*dx**2 + wx*dy**2 + wdx*np.sum(dTheta1**2) + wdy*np.sum(dTheta2**2) + wddx*np.sum(ddTheta1**2) + wddy*np.sum(ddTheta2**2)
 
     def dynamics(X):
+        """Model system dynamics as equality constraints"""
         traj = X.reshape(4, n)
         Theta1 = traj[0,:]
         Theta2 = traj[1,:]
@@ -35,6 +47,7 @@ def plan_joint_trajectory_to_goal(theta10, theta20, x2g, y2g, duration, n, metho
         return diff.flatten()
 
     def initial_config(X):
+        """Model initial configuration as equality constraints"""
         traj = X.reshape(4, n)
         Theta1 = traj[0,:]
         Theta2 = traj[1,:]
@@ -52,6 +65,7 @@ def plan_joint_trajectory_to_goal(theta10, theta20, x2g, y2g, duration, n, metho
         ])
 
     def final_config(X):
+        """Model final configuration as equality constraints"""
         traj = X.reshape(4, n)
         Theta1 = traj[0,:]
         Theta2 = traj[1,:]
@@ -62,6 +76,7 @@ def plan_joint_trajectory_to_goal(theta10, theta20, x2g, y2g, duration, n, metho
         return np.array([dTheta1[-1], dTheta2[-1], ddTheta1[-1], ddTheta2[-1]])
 
     def joint_limits(X):
+        """Model joint limits as inequality constraints"""
         traj = X.reshape(4, n)
         Theta1 = traj[0,:]
         Theta2 = traj[1,:]
@@ -129,13 +144,13 @@ def plan_joint_trajectory_to_goal(theta10, theta20, x2g, y2g, duration, n, metho
 def main():
 
     # Plan joint trajectory
-    theta10 = np.deg2rad(30)
-    theta20 = np.deg2rad(40)
-    x2g = -1
-    y2g = 0.5
-    duration = 3
-    n = 40
-    method = 'SLSQP'
+    theta10 = np.deg2rad(30)  # initial position for joint 1
+    theta20 = np.deg2rad(40)  # initial position for joint 2
+    x2g = -1  # goal end-effector position in x-axis
+    y2g = 0.5  # goal end-effector position in y-axis
+    duration = 3  # duration of trajectory
+    n = 40 # number of steps
+    method = 'SLSQP' # solver used to solve trajectory optimization problem
 
     Theta1, Theta2, dTheta1, dTheta2 = \
         plan_joint_trajectory_to_goal(theta10, theta20, x2g, y2g, duration, n, method, animate=True, disp=True)

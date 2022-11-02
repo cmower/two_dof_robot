@@ -1,13 +1,24 @@
 import numpy as np
 from robot import FD, animate_robot, plt, gr
 
+"""
+
+This script shows how the robot can be simulated using the forward
+dynamics. Options are given to see how the robot response when (i)
+zero torques are applied, (ii) the gravity term is used to compensate
+for the effects of gravity, and (iii) a typical control approach is
+used to move the robot to a goal configuration - comment the relevent
+lines.
+
+"""
+
 def main():
 
-    n = 500
-    dt = 0.01
+    n = 500  # number of steps
+    dt = 0.01  # time step
 
-    theta10, theta20 = np.deg2rad([0, 0])
-    theta1g, theta2g = np.deg2rad([45, 90])
+    theta10, theta20 = np.deg2rad([0, 0]) # initial robot configuration
+    theta1g, theta2g = np.deg2rad([45, 90])  # goal robot configuration (when using tau_ctrl)
 
     def tau_0(theta1, theta2, dtheta1, dtheta2):
         """Apply zero torque"""
@@ -19,8 +30,8 @@ def main():
 
     def tau_ctrl(theta1, theta2, dtheta1, dtheta2):
         """Control - move robot to goal"""
-        K = 100
-        D = 20
+        K = 100  # stiffness gain
+        D = 20  # damping gain
         tau1 = K*(theta1g - theta1) - D*dtheta1
         tau2 = K*(theta2g - theta2) - D*dtheta2
         return tau1, tau2

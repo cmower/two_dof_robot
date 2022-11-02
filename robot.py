@@ -13,95 +13,117 @@ https://www.youtube.com/watch?v=jVu-Hijns70&list=PLggLP4f-rq02vX0OQQ5vrCxbJrzamY
 
 """
 
-g = 9.81
-L1 = 1.
-L2 = 1.
-m1 = 1.5
-m2 = 1
-Fd1 = 1
-Fd2 = 1
-theta1_lim = np.deg2rad([-135., 135.])
-theta2_lim = np.deg2rad([-135., 135.])
+g = 9.81  # gravity
+L1 = 1.  # length of link 1
+L2 = 1.  # length of link 2
+m1 = 1.5  # mass of link 1 (concentrated at elbow joint)
+m2 = 1  # mass of link 2 (concentrated at end-effector)
+Fd1 = 1  # friction damping for joint 1
+Fd2 = 1  # friction damping for joint 2
+theta1_lim = np.deg2rad([-135., 135.])  # position limits for joint 1
+theta2_lim = np.deg2rad([-135., 135.])  # position limits for joint 2
 
 def x1(theta1, theta2):
+    """position of elbow joint in x-axis"""
     return L1*cos(theta1)
 
 def y1(theta1, theta2):
+    """position of end-effector in y-axis"""
     return L1*sin(theta1)
 
 def dx1(theta1, theta2, dtheta1, dtheta2):
+    """velocity of elbow joint in x-axis"""
     return -L1*sin(theta1)*dtheta1
 
 def dy1(theta1, theta2, dtheta1, dtheta2):
+    """velocity of elbow joint in y-axis"""
     return L1*cos(theta1)*dtheta1
 
 def x2(theta1, theta2):
+    """position of end-effector in x-axis"""
     return L1*cos(theta1) + L2*cos(theta1+theta2)
 
 def y2(theta1, theta2):
+    """position of end-effector in y-axis"""
     return L1*sin(theta1) + L2*sin(theta1+theta2)
 
 def dx2(theta1, theta2, dtheta1, dtheta2):
+    """velocity of end-effector in x-axis"""
     return (-L1*sin(theta1) - L2*sin(theta1+theta2))*dtheta1 + (-L2*sin(theta1+theta2))*dtheta2
 
 def dy2(theta1, theta2, dtheta1, dtheta2):
+    """velocity of end-effector in y-axis"""
     return (L1*cos(theta1) + L2*cos(theta1+theta2))*dtheta1 + (L2*cos(theta1+theta2))*dtheta2
 
 def J(theta1, theta2):
+    """Jacobian matrix for end-effector"""
     return np.array([
         [-L1*sin(theta1) - L2*sin(theta1+theta2), -L2*sin(theta1+theta2)],
         [L1*cos(theta1) + L2*cos(theta1+theta2), L2*cos(theta1+theta2)],
     ])
 
 def K1(theta1, theta2, dtheta1, dtheta2):
+    """Kinetic energy for link 1"""
     return 0.5*m1*(dx1(theta1, theta2, dtheta1, dtheta2)**2 + dy1(theta1, theta2, dtheta1, dtheta2)**2)
 
 def K2(theta1, theta2, dtheta1, dtheta2):
+    """Kinetic energy for link 2"""
     return 0.5*m2*(dx2(theta1, theta2, dtheta1, dtheta2)**2 + dy2(theta1, theta2, dtheta1, dtheta2)**2)
 
 def P1(theta1, theta2):
+    """Potential energy for link 1"""
     return m1*g*y1(theta1, theta2)
 
 def P2(theta1, theta2):
+    """Potential energy for link 2"""
     return m2*g*y2(theta1, theta2)
 
 def Lag(theta1, theta2, dtheta1, dtheta2):
+    """Lagrangian function"""
     return (K1(theta1, theta2, dtheta1, dtheta2) - P1(theta1, theta2, dtheta1, dtheta2)) + (K2(theta1, theta2, dtheta1, dtheta2) - P2(theta1, theta2, dtheta1, dtheta2))
 
 def tau1(theta1, theta2, dtheta1, dtheta2, ddtheta1, ddtheta2):
+    """Compute required torque in joint 1 to achieve given joint position/velocity/acceleration (inverse dynamics)"""
     term1 = (m1*L1**2 + m2*(L1**2+2*L1*L2*cos(theta2)+L2**2))*ddtheta1 + m2*(L1*L2*cos(theta2)+L2**2)*ddtheta2
     term2 = -m2*L1*L2*sin(theta2)*(2*dtheta1*dtheta2+dtheta2**2)
     term3 = (m1+m2)*L1*g*cos(theta1) + m2*g*L2*cos(theta1 + theta2)
     return term1 + term2 + term3
 
 def tau2(theta1, theta2, dtheta1, dtheta2, ddtheta1, ddtheta2):
+    """Compute required torque in joint 2 to achieve given joint position/velocity/acceleration (inverse dynamics)"""
     term1 = m2*(L1*L2*cos(theta2)+L2**2)*ddtheta1 + m2*L2**2*ddtheta2
     term2 = m2*L1*L2*dtheta1**2*sin(theta2)
     term3 = m2*g*L2*cos(theta1+theta2)
     return term1 + term2 + term3
 
 def M(theta1, theta2):
+    """Inertia matrix"""
     return np.array([
         [m1*L1**2 + m2*(L1**2+2*L1*L2*cos(theta2)+L2**2), m2*(L1*L2*cos(theta2)+L2**2)],
         [                   m2*(L1*L2*cos(theta2)+L2**2),                     m2*L2**2],
     ])
 
 def c(theta1, theta2, dtheta1, dtheta2):
+    """Coriolis vector"""
     return np.array([-m2*L1*L2*sin(theta2)*(2*dtheta1*dtheta2+dtheta2**2), m2*L1*L2*dtheta1**2*sin(theta2)])
 
 def gr(theta1, theta2):
+    """Gravity term"""
     return np.array([(m1+m2)*L1*g*cos(theta1) + m2*g*L2*cos(theta1 + theta2), m2*g*L2*cos(theta1+theta2)])
 
 def Fr(dtheta1, dtheta2):
+    """Friction model"""
     return np.array([Fd1*dtheta1, Fd2*dtheta2])
 
 def ID(theta1, theta2, dtheta1, dtheta2, ddtheta1, ddtheta2):
+    """Inverse dynamics"""
     theta = np.array([theta1, theta2])
     dtheta = np.array([dtheta1, dtheta2])
     ddtheta = np.array([ddtheta1, ddtheta2])
     return M(theta1, theta2)@ddtheta + c(theta1, theta2, dtheta1, dtheta2) + gr(theta1, theta2)
 
 def FD(theta1, theta2, dtheta1, dtheta2, tau1, tau2, apply_friction=True):
+    """Forward dynamics"""
     theta = np.array([theta1, theta2])
     dtheta = np.array([dtheta1, dtheta2])
     tau = np.array([tau1, tau2])
@@ -115,6 +137,7 @@ def FD(theta1, theta2, dtheta1, dtheta2, tau1, tau2, apply_friction=True):
     return ddtheta1, ddtheta2
 
 def plot_robot(ax, theta1, theta2, set_axis_lims=True, add_coord_axis=True, grid=True):
+    """Plot the robot"""
 
     robot_plt, = ax.plot(
         [0, x1(theta1, theta2), x2(theta1, theta2)],
@@ -141,6 +164,8 @@ def plot_robot(ax, theta1, theta2, set_axis_lims=True, add_coord_axis=True, grid
     return robot_plt
 
 def plot_trajectory(t, Theta1, Theta2, dTheta1=None, dTheta2=None, ddTheta1=None, ddTheta2=None, grid=True):
+    """Plot the robot trajectory against time"""
+
     nrows = 2
     if dTheta1 is not None:
         assert dTheta2 is not None, "both dTheta1 and dTheta2 must be given, or neither"
@@ -182,6 +207,7 @@ def plot_trajectory(t, Theta1, Theta2, dTheta1=None, dTheta2=None, ddTheta1=None
 
 
 def animate_robot(Theta1, Theta2, **kwargs):
+    """Animate the robot"""
 
     interval = 50
     if 'interval' in kwargs:
