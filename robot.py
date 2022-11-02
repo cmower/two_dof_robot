@@ -18,7 +18,7 @@ def cos(theta):
 def sin(theta):
     return np.sin(np.deg2rad(theta))
 
-g = -9.81
+g = 9.81
 L1 = 1.
 L2 = 1.
 m1 = 1.5
