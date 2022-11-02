@@ -86,7 +86,7 @@ def M(theta1, theta2):
         [                   m2*(L1*L2*cos(theta2)+L2**2),                     m2*L2**2],
     ])
 
-def C(theta1, theta2, dtheta1, dtheta2):
+def c(theta1, theta2, dtheta1, dtheta2):
     return np.array([-m2*L1*L2*sin(theta2)*(2*dtheta1*dtheta2+dtheta2**2), m2*L1*L2*dtheta1**2*sin(theta2)])
 
 def gr(theta1, theta2):
