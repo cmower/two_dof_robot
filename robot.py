@@ -17,7 +17,7 @@ g = 9.81
 L1 = 1.
 L2 = 1.
 m1 = 1.5
-m2 = 0.75
+m2 = 1
 theta1_lim = np.deg2rad([-135., 135.])
 theta2_lim = np.deg2rad([-135., 135.])
 
