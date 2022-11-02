@@ -137,7 +137,7 @@ def plot_trajectory(t, Theta1, Theta2, dTheta1=None, dTheta2=None, ddTheta1=None
         assert dTheta2 is not None, "both dTheta1 and dTheta2 must be given, or neither"
         nrows += 2
     if ddTheta1 is not None:
-        assert ddTheta2 is not None, "both ddTheta1 and ddTheta2 must be given, or neither"        
+        assert ddTheta2 is not None, "both ddTheta1 and ddTheta2 must be given, or neither"
         nrows += 2
 
     fig, ax = plt.subplots(nrows, 1, sharex=True, tight_layout=True)
@@ -145,9 +145,9 @@ def plot_trajectory(t, Theta1, Theta2, dTheta1=None, dTheta2=None, ddTheta1=None
     iplt = 0
     ax[iplt].plot(t, Theta1)
     ax[iplt].set_ylabel('Theta1')
-    
+
     ax[iplt+1].plot(t, Theta2)
-    ax[iplt+1].set_ylabel('Theta2')    
+    ax[iplt+1].set_ylabel('Theta2')
 
     if dTheta1 is not None:
         iplt += 2
@@ -158,7 +158,7 @@ def plot_trajectory(t, Theta1, Theta2, dTheta1=None, dTheta2=None, ddTheta1=None
         ax[iplt+1].set_ylabel('dTheta2')
 
     if ddTheta1 is not None:
-        iplt += 2        
+        iplt += 2
         ax[iplt].plot(t, ddTheta1)
         ax[iplt].set_ylabel('ddTheta1')
 
@@ -171,7 +171,7 @@ def plot_trajectory(t, Theta1, Theta2, dTheta1=None, dTheta2=None, ddTheta1=None
         for a in ax.flatten():
             a.grid()
 
-        
+
 def animate_robot(Theta1, Theta2, **kwargs):
 
     interval = 50
