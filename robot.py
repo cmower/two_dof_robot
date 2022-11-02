@@ -178,22 +178,53 @@ def animate_robot(Theta1, Theta2, **kwargs):
     if 'interval' in kwargs:
         interval = kwargs.pop('interval')
 
+    show_frame = True
+    if 'show_frame' in kwargs:
+        show_frame = kwargs.pop('show_frame')
+
+    verbose_output = True
+    if 'verbose_output' in kwargs:
+        verbose_output = kwargs.pop('verbose_output')
+
     Theta1 = Theta1.flatten()
     Theta2 = Theta2.flatten()
     assert Theta1.shape[0] == Theta2.shape[0], "Theta1 and Theta2 should have the same length"
+    num_frames = Theta1.shape[0]
 
     fig, ax = plt.subplots(tight_layout=True)
     robot_plt = plot_robot(ax, Theta1[0], Theta2[1], **kwargs)
 
+    txt = None
+    if show_frame:
+        factor = 0.9
+        d = factor*(L1 + L2)
+        txt = ax.text(-d, d, '', horizontalalignment='left')
+
     def init():
-        return (robot_plt,)
+        out = [robot_plt]
+        if show_frame:
+            out.append(txt)
+        return out
 
     def update(frame):
-        return (plot_robot(ax, Theta1[frame], Theta2[frame]),)
+
+        if verbose_output:
+            print(f'frame {frame+1}/{num_frames}')
+            print("  theta1 =", Theta1[frame])
+            print("  theta2 =", Theta2[frame])
+
+        if show_frame:
+            txt.set_text(f'{frame+1}/{num_frames}')
+
+        out = [plot_robot(ax, Theta1[frame], Theta2[frame])]
+        if show_frame:
+            out.append(txt)
+
+        return out
 
     FuncAnimation(
         fig, update,
-        frames=range(Theta1.shape[0]),
+        frames=range(num_frames),
         blit=True,
         init_func=init,
         interval=interval,
