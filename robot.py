@@ -94,6 +94,17 @@ def gr(theta1, theta2):
 
 def Fr(dtheta1, dtheta2):
     return np.array([Fd1*dtheta1, Fd2*dtheta2])
+
+def FD(theta1, theta2, dtheta1, dtheta2, tau1, tau2):
+    theta = np.array([theta1, theta2])
+    dtheta = np.array([dtheta1, dtheta2])
+    tau = np.array([tau1, tau2])
+    Minv = np.linalg.inv(M(theta1, theta2))
+    ddtheta = Minv @ (tau - C(theta1, theta2, dtheta1, dtheta2) - Fr(dtheta1, dtheta2) - gr(theta1, theta2))
+    ddtheta1 = ddtheta[0]
+    ddtheta2 = ddtheta[1]
+    return ddtheta1, ddtheta2
+
 def plot_robot(ax, theta1, theta2, set_axis_lims=True, add_coord_axis=True, grid=True):
 
     robot_plt, = ax.plot(
