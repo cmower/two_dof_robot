@@ -1,5 +1,5 @@
 import numpy as np
-from robot import FD, animate_robot, plt, gr, J
+from robot import FD, animate_robot, plt, gr, J, ID
 
 """
 
@@ -33,11 +33,10 @@ def main():
     i_end = 250  # iteration that the external contact force is applied till
 
     def tau_ctrl(theta1, theta2, dtheta1, dtheta2):
+        """Control (computed torque control) - move robot to goal"""
         K = 100  # stiffness gain
-        D = 20  # damping gain
-        tau1 = K*(theta10 - theta1) - D*dtheta1
-        tau2 = K*(theta20 - theta2) - D*dtheta2
-        return tau1, tau2
+        D = 10  # damping gain
+        return ID(theta10, theta20, 0, 0, K*(theta10 - theta1) - D*dtheta1, K*(theta20 - theta2) - D*dtheta2)
 
     for i in range(n-1):
 

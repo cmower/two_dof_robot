@@ -1,5 +1,5 @@
 import numpy as np
-from robot import FD, animate_robot, plt, gr
+from robot import FD, animate_robot, plt, gr, ID
 
 """
 
@@ -29,12 +29,10 @@ def main():
         return gr(theta10, theta20)
 
     def tau_ctrl(theta1, theta2, dtheta1, dtheta2):
-        """Control - move robot to goal"""
+        """Control (computed torque control) - move robot to goal"""
         K = 100  # stiffness gain
-        D = 20  # damping gain
-        tau1 = K*(theta1g - theta1) - D*dtheta1
-        tau2 = K*(theta2g - theta2) - D*dtheta2
-        return tau1, tau2
+        D = 10  # damping gain
+        return ID(theta1g, theta2g, 0, 0, K*(theta1g - theta1) - D*dtheta1, K*(theta2g - theta2) - D*dtheta2)
 
     Theta1 = np.zeros(n)
     Theta2 = np.zeros(n)
