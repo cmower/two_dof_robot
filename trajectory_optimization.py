@@ -4,7 +4,7 @@ from scipy.optimize import minimize, NonlinearConstraint
 
 from robot import x2, y2, theta1_lim, theta2_lim, animate_robot, plt, plot_trajectory
 
-def plan_joint_trajectory_to_goal(theta10, theta20, x2g, y2g, duration, n, method, wx=1e6, wy=1e6, wdx=0.01, wdy=0.01, wddx=1, wddy=1, disp=False, animate=True, plot_traj=True):
+def plan_joint_trajectory_to_goal(theta10, theta20, x2g, y2g, duration, n, method, wx=1e3, wy=1e3, wdx=0.01, wdy=0.01, wddx=1, wddy=1, disp=False, animate=True, plot_traj=True):
 
     t = np.linspace(0, duration, n)
     dt = t[1]
@@ -133,8 +133,8 @@ def main():
     theta20 = np.deg2rad(40)
     x2g = -1
     y2g = 0.5
-    duration = 4
-    n = 50
+    duration = 3
+    n = 40
     method = 'SLSQP'
 
     Theta1, Theta2, dTheta1, dTheta2 = \
