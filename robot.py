@@ -23,6 +23,11 @@ Fd2 = 1  # friction damping for joint 2
 theta1_lim = np.deg2rad([-135., 135.])  # position limits for joint 1
 theta2_lim = np.deg2rad([-135., 135.])  # position limits for joint 2
 
+def randtheta():
+    rtheta1 = np.random.uniform(theta1_lim[0], theta1_lim[1])
+    rtheta2 = np.random.uniform(theta2_lim[0], theta2_lim[1])
+    return rtheta1, rtheta2
+
 def x1(theta1, theta2):
     """position of elbow joint in x-axis"""
     return L1*cos(theta1)
