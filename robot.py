@@ -95,6 +95,12 @@ def gr(theta1, theta2):
 def Fr(dtheta1, dtheta2):
     return np.array([Fd1*dtheta1, Fd2*dtheta2])
 
+def ID(theta1, theta2, dtheta1, dtheta2, ddtheta1, ddtheta2):
+    theta = np.array([theta1, theta2])
+    dtheta = np.array([dtheta1, dtheta2])
+    ddtheta = np.array([ddtheta1, ddtheta2])
+    return M(theta1, theta2)@ddtheta + c(theta1, theta2, dtheta1, dtheta2) + gr(theta1, theta2)
+
 def FD(theta1, theta2, dtheta1, dtheta2, tau1, tau2, apply_friction=True):
     theta = np.array([theta1, theta2])
     dtheta = np.array([dtheta1, dtheta2])
