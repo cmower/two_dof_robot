@@ -216,7 +216,7 @@ def plot_trajectory(t, Theta1, Theta2, dTheta1=None, dTheta2=None, ddTheta1=None
             a.grid()
 
 
-def animate_robot(Theta1, Theta2, **kwargs):
+def animate_robot(fig, ax, Theta1, Theta2, **kwargs):
     """Animate the robot"""
 
     interval = 50
@@ -236,7 +236,6 @@ def animate_robot(Theta1, Theta2, **kwargs):
     assert Theta1.shape[0] == Theta2.shape[0], "Theta1 and Theta2 should have the same length"
     num_frames = Theta1.shape[0]
 
-    fig, ax = plt.subplots(tight_layout=True)
     robot_plt = plot_robot(ax, Theta1[0], Theta2[1], **kwargs)
 
     txt = None
@@ -285,7 +284,8 @@ def main():
     # Animate robot
     Theta1 = np.deg2rad(np.linspace(10, 30))
     Theta2 = np.deg2rad(np.linspace(0, 90))
-    animate_robot(Theta1, Theta2)
+    fig, ax = plt.subplots(tight_layout=True)
+    animate_robot(fig, ax, Theta1, Theta2)
 
     plt.show()
 

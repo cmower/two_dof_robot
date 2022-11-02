@@ -60,7 +60,8 @@ def main():
         Theta1[i+1] = Theta1[i] + dt*dTheta1[i]
         Theta2[i+1] = Theta2[i] + dt*dTheta2[i]
 
-    animate_robot(Theta1, Theta2, interval=dt*1000)
+    fig, ax = plt.subplots(tight_layout=True)
+    animate_robot(fig, ax, Theta1, Theta2, interval=dt*1000)
 
     plt.show()
 

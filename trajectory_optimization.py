@@ -130,7 +130,8 @@ def plan_joint_trajectory_to_goal(theta10, theta20, x2g, y2g, duration, n, metho
     dTheta2 = traj[3,:]
 
     if animate:
-        animate_robot(Theta1, Theta2, interval=dt*1000)
+        fig, ax = plt.subplots(tight_layout=True)
+        animate_robot(fig, ax, Theta1, Theta2, interval=dt*1000)
 
     if plot_traj:
         ddTheta1 = np.gradient(dTheta1, t)
