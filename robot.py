@@ -18,6 +18,8 @@ L1 = 1.
 L2 = 1.
 m1 = 1.5
 m2 = 1
+Fd1 = 1
+Fd2 = 1
 theta1_lim = np.deg2rad([-135., 135.])
 theta2_lim = np.deg2rad([-135., 135.])
 
@@ -90,6 +92,8 @@ def C(theta1, theta2, dtheta1, dtheta2):
 def gr(theta1, theta2):
     return np.array([(m1+m2)*L1*g*cos(theta1) + m2*g*L2*cos(theta1 + theta2), m2*g*L2*cos(theta1+theta2)])
 
+def Fr(dtheta1, dtheta2):
+    return np.array([Fd1*dtheta1, Fd2*dtheta2])
 def plot_robot(ax, theta1, theta2, set_axis_lims=True, add_coord_axis=True, grid=True):
 
     robot_plt, = ax.plot(
