@@ -9,3 +9,4 @@ A model for a robot with two degrees of freedom.
 * Scipy
 * matplotlib
 * Scikit learn
+* (optional) [cyipopt](https://github.com/mechmotum/cyipopt)
