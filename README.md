@@ -8,3 +8,4 @@ A model for a robot with two degrees of freedom.
 * Numpy
 * Scipy
 * matplotlib
+* Scikit learn
