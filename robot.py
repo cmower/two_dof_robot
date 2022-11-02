@@ -1,6 +1,7 @@
 import numpy as np
 from numpy import sin, cos
 import matplotlib.pyplot as plt
+from matplotlib.patches import Circle
 from matplotlib.animation import FuncAnimation
 
 """
@@ -22,6 +23,7 @@ Fd1 = 1  # friction damping for joint 1
 Fd2 = 1  # friction damping for joint 2
 theta1_lim = np.deg2rad([-135., 135.])  # position limits for joint 1
 theta2_lim = np.deg2rad([-135., 135.])  # position limits for joint 2
+robot_joint_radius = 0.1  # radii for the robot joints
 
 def randtheta():
     rtheta1 = np.random.uniform(theta1_lim[0], theta1_lim[1])
@@ -149,12 +151,12 @@ def FD(theta1, theta2, dtheta1, dtheta2, tau1, tau2, apply_friction=True, apply_
 def plot_robot(ax, theta1, theta2, set_axis_lims=True, add_coord_axis=True, grid=True):
     """Plot the robot"""
 
-    robot_plt, = ax.plot(
-        [0, x1(theta1, theta2), x2(theta1, theta2)],
-        [0, y1(theta1, theta2), y2(theta1, theta2)],
-        '-ok', markerfacecolor='blue', markeredgecolor='blue',
-        zorder=3,
-    )
+    X = [0, x1(theta1, theta2), x2(theta1, theta2)]
+    Y = [0, y1(theta1, theta2), y2(theta1, theta2)]
+    robot_plt, = ax.plot(X, Y, '-k', zorder=3)
+    circs = [Circle([x,y], radius=robot_joint_radius, color='blue', zorder=4) for x,y in zip(X, Y)]
+    for c in circs:
+        ax.add_patch(c)
 
     if add_coord_axis:
         zorder = 2
@@ -171,7 +173,7 @@ def plot_robot(ax, theta1, theta2, set_axis_lims=True, add_coord_axis=True, grid
         ax.set_ylim(-d, d)
         ax.set_aspect('equal')
 
-    return robot_plt
+    return [robot_plt] + circs
 
 def plot_trajectory(t, Theta1, Theta2, dTheta1=None, dTheta2=None, ddTheta1=None, ddTheta2=None, grid=True):
     """Plot the robot trajectory against time"""
@@ -236,7 +238,9 @@ def animate_robot(fig, ax, Theta1, Theta2, **kwargs):
     assert Theta1.shape[0] == Theta2.shape[0], "Theta1 and Theta2 should have the same length"
     num_frames = Theta1.shape[0]
 
-    robot_plt = plot_robot(ax, Theta1[0], Theta2[1], **kwargs)
+    robot = plot_robot(ax, Theta1[0], Theta2[1], **kwargs)
+    robot_plt = robot[0]
+    circs = robot[1:4]
 
     txt = None
     if show_frame:
@@ -245,7 +249,7 @@ def animate_robot(fig, ax, Theta1, Theta2, **kwargs):
         txt = ax.text(-d, d, '', horizontalalignment='left')
 
     def init():
-        out = [robot_plt]
+        out = [robot_plt] + circs
         if show_frame:
             out.append(txt)
         return out
@@ -260,7 +264,7 @@ def animate_robot(fig, ax, Theta1, Theta2, **kwargs):
         if show_frame:
             txt.set_text(f'{frame+1}/{num_frames}')
 
-        out = [plot_robot(ax, Theta1[frame], Theta2[frame])]
+        out = plot_robot(ax, Theta1[frame], Theta2[frame])
         if show_frame:
             out.append(txt)
 
