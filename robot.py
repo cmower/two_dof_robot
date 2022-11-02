@@ -226,8 +226,8 @@ def animate_robot(Theta1, Theta2, **kwargs):
     if 'verbose_output' in kwargs:
         verbose_output = kwargs.pop('verbose_output')
 
-    Theta1 = Theta1.flatten()
-    Theta2 = Theta2.flatten()
+    Theta1 = np.asarray(Theta1).flatten()
+    Theta2 = np.asarray(Theta2).flatten()
     assert Theta1.shape[0] == Theta2.shape[0], "Theta1 and Theta2 should have the same length"
     num_frames = Theta1.shape[0]
 
