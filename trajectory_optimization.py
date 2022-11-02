@@ -129,8 +129,8 @@ def plan_joint_trajectory_to_goal(theta10, theta20, x2g, y2g, duration, n, metho
 def main():
 
     # Plan joint trajectory
-    theta10 = 30
-    theta20 = 40
+    theta10 = np.deg2rad(30)
+    theta20 = np.deg2rad(40)
     x2g = -1
     y2g = 0.5
     duration = 4

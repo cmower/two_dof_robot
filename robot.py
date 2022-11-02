@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import sin, cos
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
@@ -12,19 +13,13 @@ https://www.youtube.com/watch?v=jVu-Hijns70&list=PLggLP4f-rq02vX0OQQ5vrCxbJrzamY
 
 """
 
-def cos(theta):
-    return np.cos(np.deg2rad(theta))
-
-def sin(theta):
-    return np.sin(np.deg2rad(theta))
-
 g = 9.81
 L1 = 1.
 L2 = 1.
 m1 = 1.5
 m2 = 0.75
-theta1_lim = [-135., 135.]
-theta2_lim = [-135., 135.]
+theta1_lim = np.deg2rad([-135., 135.])
+theta2_lim = np.deg2rad([-135., 135.])
 
 def x1(theta1, theta2):
     return L1*cos(theta1)
@@ -194,11 +189,11 @@ def main():
 
     # Plot robot
     fig, ax = plt.subplots(tight_layout=True)
-    plot_robot(ax, 150, 100)
+    plot_robot(ax, np.deg2rad(30), np.deg2rad(40))
 
     # Animate robot
-    Theta1 = np.linspace(10, 30)
-    Theta2 = np.linspace(0, 90)
+    Theta1 = np.deg2rad(np.linspace(10, 30))
+    Theta2 = np.deg2rad(np.linspace(0, 90))
     animate_robot(Theta1, Theta2)
 
     plt.show()
