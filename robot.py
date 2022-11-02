@@ -95,12 +95,15 @@ def gr(theta1, theta2):
 def Fr(dtheta1, dtheta2):
     return np.array([Fd1*dtheta1, Fd2*dtheta2])
 
-def FD(theta1, theta2, dtheta1, dtheta2, tau1, tau2):
+def FD(theta1, theta2, dtheta1, dtheta2, tau1, tau2, apply_friction=True):
     theta = np.array([theta1, theta2])
     dtheta = np.array([dtheta1, dtheta2])
     tau = np.array([tau1, tau2])
     Minv = np.linalg.inv(M(theta1, theta2))
-    ddtheta = Minv @ (tau - C(theta1, theta2, dtheta1, dtheta2) - Fr(dtheta1, dtheta2) - gr(theta1, theta2))
+    N = c(theta1, theta2, dtheta1, dtheta2) + gr(theta1, theta2)
+    if apply_friction:
+        N += Fr(dtheta1, dtheta2)
+    ddtheta = Minv @ (tau - N)
     ddtheta1 = ddtheta[0]
     ddtheta2 = ddtheta[1]
     return ddtheta1, ddtheta2
