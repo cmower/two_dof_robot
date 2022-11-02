@@ -127,7 +127,7 @@ def ID(theta1, theta2, dtheta1, dtheta2, ddtheta1, ddtheta2):
     ddtheta = np.array([ddtheta1, ddtheta2])
     return M(theta1, theta2)@ddtheta + c(theta1, theta2, dtheta1, dtheta2) + gr(theta1, theta2)
 
-def FD(theta1, theta2, dtheta1, dtheta2, tau1, tau2, apply_friction=True):
+def FD(theta1, theta2, dtheta1, dtheta2, tau1, tau2, apply_friction=True, apply_noise=False, eps=1e-3):
     """Forward dynamics"""
     theta = np.array([theta1, theta2])
     dtheta = np.array([dtheta1, dtheta2])
@@ -139,6 +139,11 @@ def FD(theta1, theta2, dtheta1, dtheta2, tau1, tau2, apply_friction=True):
     ddtheta = Minv @ (tau - N)
     ddtheta1 = ddtheta[0]
     ddtheta2 = ddtheta[1]
+
+    if apply_noise:
+        ddtheta1 += np.random.uniform(-eps, eps)
+        ddtheta2 += np.random.uniform(-eps, eps)
+
     return ddtheta1, ddtheta2
 
 def plot_robot(ax, theta1, theta2, set_axis_lims=True, add_coord_axis=True, grid=True):
