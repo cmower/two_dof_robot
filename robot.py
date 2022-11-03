@@ -153,7 +153,7 @@ def plot_robot(ax, theta1, theta2, set_axis_lims=True, add_coord_axis=True, grid
 
     X = [0, x1(theta1, theta2), x2(theta1, theta2)]
     Y = [0, y1(theta1, theta2), y2(theta1, theta2)]
-    robot_plt, = ax.plot(X, Y, '-k', zorder=3)
+    robot_plt, = ax.plot(X, Y, '-k', zorder=3, linewidth=4)
     circs = [Circle([x,y], radius=robot_joint_radius, color='blue', zorder=4) for x,y in zip(X, Y)]
     for c in circs:
         ax.add_patch(c)
