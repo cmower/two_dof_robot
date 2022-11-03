@@ -29,7 +29,7 @@ def main(filename):
         os.mkdir(nndir)
 
     stamp = time.time_ns()
-    filename = os.path.joint(nndir, f'learn_id_nn_{stamp}.nn')
+    filename = os.path.join(nndir, f'learn_id_nn_{stamp}.nn')
     with open(filename, 'wb') as f:
         pickle.dump(regr, f)
     print("Saved", filename)
