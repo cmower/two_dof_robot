@@ -29,10 +29,26 @@ def main():
         return gr(theta10, theta20)
 
     def tau_ctrl(theta1, theta2, dtheta1, dtheta2):
-        """Control (computed torque control) - move robot to goal"""
-        K = 100  # stiffness gain
-        D = 10  # damping gain
-        return ID(theta1g, theta2g, 0, 0, K*(theta1g - theta1) - D*dtheta1, K*(theta2g - theta2) - D*dtheta2)
+        """Control - move robot to goal"""
+        # mtd = 'ctc'  # computed torque control
+        mtd = 'ffc'  # feedforward control
+        if mtd == 'ctc':
+            K = 100  # stiffness gain
+            D = 10  # damping gain
+            return ID(theta1g, theta2g, 0, 0, K*(theta1g - theta1) - D*dtheta1, K*(theta2g - theta2) - D*dtheta2)
+        elif mtd == 'ffc':
+            theta = np.array([theta1, theta2])
+            thetag = np.array([theta1g, theta2g])
+            e = thetag - theta
+            dtheta = np.array([dtheta1, dtheta2])
+            dthetag = np.zeros(2)
+            de = dthetag - dtheta
+            Kp = 400
+            Kv = 50
+            return ID(theta1g, theta2g, 0, 0, 0, 0) + Kp*e + Kv*de
+        else:
+            raise ValueError(f"did not recognize control method '{mtd}'")
+
 
     Theta1 = np.zeros(n)
     Theta2 = np.zeros(n)
