@@ -28,10 +28,12 @@ def main():
         """Gravity compensation - i.e. hold robot at initial location"""
         return gr(theta10, theta20)
 
-    def tau_ctrl(theta1, theta2, dtheta1, dtheta2):
+    def tau_ctrl(theta1, theta2, dtheta1, dtheta2, mtd='ff+grc'):
         """Control - move robot to goal"""
         # mtd = 'ctc'  # computed torque control
-        mtd = 'ffc'  # feedforward control
+        # mtd = 'ffc'  # feedforward control
+        # mtd = 'pdc' # PD control
+        # mtd = 'ff+grc'  # feedforward with gravity compensation
         if mtd == 'ctc':
             K = 100  # stiffness gain
             D = 10  # damping gain
@@ -46,6 +48,18 @@ def main():
             Kp = 400
             Kv = 50
             return ID(theta1g, theta2g, 0, 0, 0, 0) + Kp*e + Kv*de
+        elif mtd == 'pdc':
+            theta = np.array([theta1, theta2])
+            thetag = np.array([theta1g, theta2g])
+            e = thetag - theta
+            dtheta = np.array([dtheta1, dtheta2])
+            dthetag = np.zeros(2)
+            de = dthetag - dtheta
+            Kp = 300
+            Kv = 50
+            return Kp*e + Kv*de
+        elif mtd == 'ff+grc':
+            return tau_ctrl(theta1, theta2, dtheta1, dtheta2, mtd='ffc') + tau_gr(theta1, theta2, dtheta1, dtheta2)
         else:
             raise ValueError(f"did not recognize control method '{mtd}'")
 
@@ -67,7 +81,7 @@ def main():
         # tau1, tau2 = tau_gr(Theta1[i], Theta2[i], dTheta1[i], dTheta2[i])
         tau1, tau2 = tau_ctrl(Theta1[i], Theta2[i], dTheta1[i], dTheta2[i])
 
-        ddtheta1, ddtheta2 = FD(Theta1[i], Theta2[i], dTheta1[i], dTheta2[i], tau1, tau2)
+        ddtheta1, ddtheta2 = FD(Theta1[i], Theta2[i], dTheta1[i], dTheta2[i], tau1, tau2, apply_noise=False, eps=10)
 
         ddTheta1[i+1] = ddtheta1
         ddTheta1[i+1] = ddtheta2
