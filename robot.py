@@ -270,13 +270,15 @@ def animate_robot(fig, ax, Theta1, Theta2, **kwargs):
 
         return out
 
-    FuncAnimation(
+    ani = FuncAnimation(
         fig, update,
         frames=range(num_frames),
         blit=True,
         init_func=init,
         interval=interval,
     )
+
+    return ani
 
 
 def main():
@@ -289,7 +291,7 @@ def main():
     Theta1 = np.deg2rad(np.linspace(10, 30))
     Theta2 = np.deg2rad(np.linspace(0, 90))
     fig, ax = plt.subplots(tight_layout=True)
-    animate_robot(fig, ax, Theta1, Theta2)
+    ani = animate_robot(fig, ax, Theta1, Theta2, verbose_output=True)
 
     plt.show()
 
